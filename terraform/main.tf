@@ -1,16 +1,12 @@
-# -------------------
-#
-#   AnimeMyL1fe
-#    made by
-#
-# -------------------
-
-# --- CREATE INSTANCE ---
+# ---------------------------------------
+# CREATE INSTANCE
+# ---------------------------------------
 resource "proxmox_virtual_environment_vm" "instance" {
-  for_each = var.vm_list
-  name      = each.value.name
-  node_name = var.node_name
-  vm_id     = each.value.id
+  for_each    = var.instances
+  name        = each.value.name
+  node_name   = var.node_name
+  description = "Managed by micro-paas-blueprint"
+  vm_id       = each.value.vm_id
 
   clone {
     vm_id = var.clone_id 
@@ -43,8 +39,9 @@ resource "proxmox_virtual_environment_vm" "instance" {
   }
 }
 
-
-# --- DYNAMIC INVENTORY ---
+# ---------------------------------------
+# DYNAMIC INVENTORY
+# ---------------------------------------
 locals {
   vm_info = {
     for name, vm in proxmox_virtual_environment_vm.instance : name =>{

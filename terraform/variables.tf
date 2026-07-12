@@ -1,10 +1,11 @@
-# --- DEFAULTS VARIABLES ---
-# ssh-user
+# ---------------------------------------
+# Default Configuration
+# ---------------------------------------
+# SSH
 variable "vm_user" {
   type = string
   default = "ansible"
 }
-# ssh pubkey
 variable "path_ssh" {
   type = string
   default = "~/.ssh/proxmox_key.pub"
@@ -13,6 +14,7 @@ variable "private_ssh" {
   type = string
   default = "~/.ssh/proxmox_key"
 }
+# PROXMOX
 variable "node_name" {
   type = string
   default = "proxmox2"
@@ -22,13 +24,15 @@ variable "clone_id" {
   default = 9000
 }
 
-# --- VM VARIABLES ---
-variable "vm_list" {
-    type = map(object({
-        name        = string
-        cpu         = number
-        ram         = number
-        disk_size   = number
-        id          = number
-    }))
+# ---------------------------------------
+# Virtual Machines
+# ---------------------------------------
+variable "instances" {
+  type = map(object({
+    name     = string
+    cpu      = number
+    ram_mb   = number
+    disk_gb  = number
+    vm_id    = number
+  }))
 }

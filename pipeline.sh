@@ -14,11 +14,11 @@ read -p "id: " ID
 # --name NAME --cpu CPU --ram RAM --disk DISK --id ID
 echo "PYTHON SCRIPT ..."
 python3 main.py \
-  --name "$NAME" \
-  --cpu "$CPU" \
-  --ram "$RAM" \
-  --disk "$DISK" \
-  --id "$ID"
+    --name "$NAME"\
+    --cpu "$CPU" \
+    --ram "$RAM" \
+    --disk "$DISK" \
+    --vm-id "$ID"
 
 sleep 3
 # terraform check
