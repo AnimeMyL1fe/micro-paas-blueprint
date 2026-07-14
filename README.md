@@ -108,17 +108,16 @@ terraform/terraform.tfvars.json
 Python CLI
       │
       ▼
-terraform.tfvars.json
-      │
-      ▼
 Terraform
       │
       ▼
 Proxmox VE
       │
       ▼
-Cloud-Init
-      │
+Virtual Machine
+
+      ──────────────── Планируется ────────────────
+
       ▼
 Ansible Inventory
       │
