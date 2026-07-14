@@ -23,16 +23,11 @@ Ansible
 ```
 
 ## Что уже реализовано
-
-- [x] Базовая Terraform-конфигурация
-- [x] Создание виртуальных машин через Clone Template (Proxmox)
-- [x] Генерация `terraform.tfvars.json` через Python
-- [x] Динамическая генерация Ansible Inventory
-- [x] Локальный pipeline (`pipeline.sh`)
-- [ ] Автоматический запуск Terraform из Python
-- [ ] Автоматический запуск Ansible
-- [ ] Metadata сервисов
-- [ ] Поддержка нескольких сервисов
+- ✅ Базовая Terraform-конфигурация
+- ✅ Создание виртуальных машин из Cloud-Init Template (Proxmox VE)
+- ✅ Генерация terraform.tfvars.json через Python CLI
+- ✅ Автоматическое назначение статических IP из пула
+- ✅ Настройка Proxmox SDN (VNet + Subnet)
 
 ## Структура проекта
 
@@ -45,6 +40,7 @@ Ansible
     ├── main.tf
     ├── output.tf
     ├── provider.tf
+    ├── subnet.tf
     ├── variables.tf
     └── templates
         └── inventory.tpl
@@ -105,6 +101,28 @@ terraform/terraform.tfvars.json
 ```
 
 который используется Terraform.
+
+## Pipeline
+
+Python CLI
+      │
+      ▼
+terraform.tfvars.json
+      │
+      ▼
+Terraform
+      │
+      ▼
+Proxmox VE
+      │
+      ▼
+Cloud-Init
+      │
+      ▼
+Ansible Inventory
+      │
+      ▼
+Ansible Playbook
 
 ## Планируемые возможности
 
