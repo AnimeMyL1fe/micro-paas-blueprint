@@ -104,6 +104,7 @@ terraform/terraform.tfvars.json
 
 ## Pipeline
 
+```
 Python CLI
       │
       ▼
@@ -123,6 +124,7 @@ Ansible Inventory
       │
       ▼
 Ansible Playbook
+```
 
 ## Планируемые возможности
 
