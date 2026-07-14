@@ -116,7 +116,7 @@ Proxmox VE
       ▼
 Virtual Machine
 
-      ──────────────── Планируется ────────────────
+      --- Планируется --- 
 
       ▼
 Ansible Inventory
