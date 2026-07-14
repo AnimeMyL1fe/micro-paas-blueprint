@@ -1,3 +1,3 @@
-output "vm_info" {
-  value = local.vm_info
- }
+#output "vm_info" {
+#  value = local.vm_info
+# }

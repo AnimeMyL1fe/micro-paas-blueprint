@@ -17,19 +17,25 @@ resource "proxmox_virtual_environment_vm" "instance" {
   }
 
   memory {
-    dedicated = each.value.ram
+    dedicated = each.value.ram_mb
   }
 
   disk {
     datastore_id = "local-lvm"
     interface    = "scsi0"
-    size         = each.value.disk_size
+    size         = each.value.disk_gb
   }
+
+  network_device {
+    bridge = var.vm_vnet
+  }
+
 
   initialization {
     ip_config {
       ipv4 {
-        address = "dhcp"
+        address = "${each.value.vm_ipv4}/24"
+        gateway = each.value.gateway
       }
     }
     user_account {
@@ -42,7 +48,7 @@ resource "proxmox_virtual_environment_vm" "instance" {
 # ---------------------------------------
 # DYNAMIC INVENTORY
 # ---------------------------------------
-locals {
+/*locals {
   vm_info = {
     for name, vm in proxmox_virtual_environment_vm.instance : name =>{
       ip = vm.ipv4_addresses[1][0]
@@ -58,3 +64,4 @@ resource "local_file" "ansible_inventory" {
   })
   filename = "${path.module}/../ansible/inventory/hosts.yaml"
 }
+*/

@@ -27,12 +27,19 @@ variable "clone_id" {
 # ---------------------------------------
 # Virtual Machines
 # ---------------------------------------
+variable "vm_vnet" {
+  type = string
+  default = "vn1"
+}
+
 variable "instances" {
   type = map(object({
-    name     = string
-    cpu      = number
-    ram_mb   = number
-    disk_gb  = number
-    vm_id    = number
+    name        = string
+    cpu         = number
+    ram_mb      = number
+    disk_gb     = number
+    vm_id       = number
+    vm_ipv4     = string
+    gateway     = string
   }))
 }
