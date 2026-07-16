@@ -1,0 +1,58 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for docker-install
+- name: create group for user
+  group:
+    name: dev
+    state: present
+
+- name: create dir for docker
+  file:
+    path: /opt/docker
+    state: directory
+    group: dev
+    mode: "0770"
+
+- name: download package
+  apt:
+    name:
+      - ca-certificates 
+      - curl
+      - apt-transport-https
+      - gnupg-agent
+      - software-properties-common
+    state: present
+    update_cache: yes
+
+- name: add key
+  apt_key:
+    url: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/gpg"
+    state: present
+
+
+- name: add repo
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] }} stable"
+    update_cache: yes
+
+- name: install docker
+  apt:
+    name:
+      - docker-ce 
+      - docker-ce-cli 
+      - containerd.io 
+      - docker-buildx-plugin 
+      - docker-compose-plugin
+    update_cache: yes
+
+- name: add a user to a group
+  user:
+    name: "{{ ansible_user }}"
+    groups: dev, docker
+    append: yes
+
+- name: start docker
+  service:
+    name: docker
+    enabled: yes
+    state: started

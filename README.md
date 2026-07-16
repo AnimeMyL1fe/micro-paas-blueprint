@@ -91,7 +91,7 @@ python3 main.py \
     --cpu "$CPU" \
     --ram "$RAM" \
     --disk "$DISK" \
-    --vm-id "$ID"
+    --vm-id "$ID" 
 ```
 
 После выполнения будет создан файл:

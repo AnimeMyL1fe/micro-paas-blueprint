@@ -48,12 +48,13 @@ resource "proxmox_virtual_environment_vm" "instance" {
 # ---------------------------------------
 # DYNAMIC INVENTORY
 # ---------------------------------------
-/*locals {
+locals {
   vm_info = {
     for name, vm in proxmox_virtual_environment_vm.instance : name =>{
-      ip = vm.ipv4_addresses[1][0]
+      ip = vm.initialization[0].ip_config[0].ipv4[0].address
     }
   }
+
 }
 
 resource "local_file" "ansible_inventory" {
@@ -64,4 +65,3 @@ resource "local_file" "ansible_inventory" {
   })
   filename = "${path.module}/../ansible/inventory/hosts.yaml"
 }
-*/
