@@ -25,6 +25,14 @@ variable "clone_id" {
 }
 
 # ---------------------------------------
+# Firewall Configuration
+# ---------------------------------------
+variable "source_ip" {
+  type = string
+  default = "192.168.0.0/24"
+}
+
+# ---------------------------------------
 # Virtual Machines
 # ---------------------------------------
 variable "vm_vnet" {

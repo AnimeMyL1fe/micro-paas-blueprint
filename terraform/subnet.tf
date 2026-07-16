@@ -20,7 +20,7 @@ resource "proxmox_virtual_environment_sdn_subnet" "subnet_1" {
   cidr    = "10.100.100.0/24"
   vnet    = proxmox_virtual_environment_sdn_vnet.vnet_1.id
   gateway = "10.100.100.1"
-
+  snat    = true
 }
 
 # SDN Applier for all resources

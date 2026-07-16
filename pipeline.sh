@@ -22,4 +22,11 @@ python3 main.py \
 
 sleep 3
 # terraform check
-terraform -chdir=terraform plan
+terraform -chdir=terraform init
+terraform -chdir=terraform apply -auto-approve
+
+echo "ожидание ssh ... (15s)"
+sleep 15
+# ansible
+echo "ANSIBLE DEPLOY ..."
+cd ansible && ansible-playbook test_deploy.yml

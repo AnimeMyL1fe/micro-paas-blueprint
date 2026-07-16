@@ -1,6 +1,7 @@
 # micro-paas-blueprint
 
-Инструмент для автоматической генерации и развёртывания инфраструктуры на базе **Terraform** и **Ansible**.
+Автоматизированное создание виртуальных машин и развёртывание сервисов в Proxmox VE с использованием Terraform, Cloud-Init и Ansible.
+
 
 ## Цель проекта
 
@@ -22,28 +23,50 @@ Ansible
 Развёртывание сервисов
 ```
 
+## Используемые технологии
+
+- Python
+- Terraform
+- Proxmox VE
+- Cloud-Init
+- Ansible
+
 ## Что уже реализовано
 - ✅ Базовая Terraform-конфигурация
 - ✅ Создание виртуальных машин из Cloud-Init Template (Proxmox VE)
-- ✅ Генерация terraform.tfvars.json через Python CLI
+- ✅ Генерация `terraform.tfvars.json` через Python CLI
 - ✅ Автоматическое назначение статических IP из пула
-- ✅ Настройка Proxmox SDN (VNet + Subnet)
+- ✅ Настройка Proxmox SDN: Zone, VNet, Subnet и SNAT
+- ✅ Создание и применение базовой Security Group
+- ✅ Автоматическая генерация Ansible Inventory
+- ✅ Автоматический запуск Terraform
+- ✅ Ожидание готовности SSH после создания VM
+- ✅ Автоматический запуск Ansible Playbook
+- ✅ Установка Docker через Ansible
 
 ## Структура проекта
 
 ```text
 .
 ├── README.md
+├── ansible
+│   ├── ansible.cfg
+│   ├── inventory
+│   │   └── hosts.yaml
+│   ├── roles
+│   │   └── docker-install
+│   └── test_deploy.yml
 ├── main.py
 ├── pipeline.sh
-└── terraform
-    ├── main.tf
-    ├── output.tf
-    ├── provider.tf
-    ├── subnet.tf
-    ├── variables.tf
-    └── templates
-        └── inventory.tpl
+├── terraform
+    ├── main.tf
+    ├── output.tf
+    ├── provider.tf
+    ├── security_group.tf
+    ├── subnet.tf
+    ├── templates
+    │   └── inventory.tpl
+    └── variables.tf
 ```
 
 ## Использование
@@ -74,12 +97,38 @@ id: 5000
 ```text
 pipeline.sh
         ↓
-main.py
+Python CLI
         ↓
 terraform.tfvars.json
         ↓
+terraform init
+        ↓
 terraform plan
+        ↓
+terraform apply
+        ↓
+Создание VM в Proxmox VE
+        ↓
+Генерация Ansible Inventory
+        ↓
+Ожидание доступности SSH
+        ↓
+Ansible Playbook
+        ↓
+Установка Docker
 ```
+
+## Текущий pipeline
+
+На текущем этапе проект способен автоматически:
+
+- создать виртуальную машину в Proxmox VE;
+- настроить сеть (SDN);
+- применить базовую Security Group;
+- сгенерировать Ansible Inventory;
+- дождаться доступности SSH;
+- выполнить Ansible Playbook;
+- установить Docker.
 
 ## Прямой запуск Python
 
@@ -102,28 +151,6 @@ terraform/terraform.tfvars.json
 
 который используется Terraform.
 
-## Pipeline
-
-```
-Python CLI
-      │
-      ▼
-Terraform
-      │
-      ▼
-Proxmox VE
-      │
-      ▼
-Virtual Machine
-
-      --- Планируется --- 
-
-      ▼
-Ansible Inventory
-      │
-      ▼
-Ansible Playbook
-```
 
 ## Планируемые возможности
 
@@ -131,8 +158,6 @@ Ansible Playbook
 
 Возможные направления развития:
 
-- [ ] Автоматический запуск Terraform
-- [ ] Автоматический запуск Ansible
 - [ ] Metadata сервисов
 - [ ] Поддержка нескольких сервисов
 - [ ] Поддержка нескольких виртуальных машин

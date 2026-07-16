@@ -28,6 +28,8 @@ resource "proxmox_virtual_environment_vm" "instance" {
 
   network_device {
     bridge = var.vm_vnet
+    model    = "virtio"
+    firewall = true
   }
 
 
@@ -51,7 +53,7 @@ resource "proxmox_virtual_environment_vm" "instance" {
 locals {
   vm_info = {
     for name, vm in proxmox_virtual_environment_vm.instance : name =>{
-      ip = vm.initialization[0].ip_config[0].ipv4[0].address
+      ip = split("/", vm.initialization[0].ip_config[0].ipv4[0].address)[0]
     }
   }
 
