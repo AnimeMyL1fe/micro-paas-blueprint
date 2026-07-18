@@ -1,0 +1,15 @@
+profile_name: medium
+
+infrastructure:
+  cpu: 4
+  ram_mb: 4096
+  disk_gb: 50
+
+postgresql:
+  version: "15-alpine"
+  max_connections: 150
+  shared_buffers: 1GB
+
+features:
+  exporter_enabled: true
+  adminer_enabled: false

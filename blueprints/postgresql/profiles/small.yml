@@ -1,0 +1,15 @@
+profile_name: small
+
+infrastructure:
+  cpu: 2
+  ram_mb: 2048
+  disk_gb: 20
+
+postgresql:
+  version: "15-alpine"
+  max_connections: 50
+  shared_buffers: 256MB
+
+features:
+  exporter_enabled: true
+  adminer_enabled: true

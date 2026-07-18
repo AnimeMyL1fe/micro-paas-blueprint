@@ -1,5 +1,18 @@
 ---
-- name: test
-  hosts: all
-  roles:
-    - docker-install
+
+- name: Deploy blueprint
+  hosts: linux_servers
+  tasks:
+    - name: Run shared roles
+      include_role:
+        name: "{{ role_name }}"
+      loop: "{{ shared_roles }}"
+      loop_control:
+        loop_var: role_name
+
+    - name: Run service roles
+      include_role:
+        name: "{{ role_name }}"
+      loop: "{{ service_roles }}"
+      loop_control:
+        loop_var: role_name

@@ -1,0 +1,20 @@
+shared_roles:
+  - docker-install
+
+service_roles:
+  - postgresql
+
+
+postgresql:
+  image: postgres:15-alpine
+  database: default_db
+  user: postgres
+
+  exporter:
+    enabled: true
+    user: prometheus_exporter
+
+  adminer:
+    enabled: true
+
+    

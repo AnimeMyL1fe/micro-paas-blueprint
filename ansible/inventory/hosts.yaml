@@ -3,7 +3,7 @@ all:
     # --- LINUX SERVERS ---
     linux_servers: 
       hosts:
-        test:
+        postgresql:
           ansible_host: 10.100.100.10
   vars:
     ansible_user: ansible

@@ -21,7 +21,7 @@ resource "proxmox_virtual_environment_vm" "instance" {
   }
 
   disk {
-    datastore_id = "local-lvm"
+    datastore_id = "nvme-lvm"
     interface    = "scsi0"
     size         = each.value.disk_gb
   }

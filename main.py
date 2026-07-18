@@ -1,75 +1,77 @@
-import argparse
+import yaml
 import json
 from pathlib import Path
 
 
-IP_POOL = [
-    f"10.100.100.{host}"
-    for host in range(10, 20)
-]
+file_path = Path("terraform/terraform.tfvars.json")
+# ip_pool
+IP_POOL = []
+for host in range(10, 21):
+    IP_POOL.append(f"10.100.100.{host}")
 
-#CIDR_SUFFIX = "/24"
 GATEWAY = "10.100.100.1"
 
-
-def get_free_ip(instances: dict) -> str:
-    used_ips = {
-        vm["vm_ipv4"].split("/")[0]
-        for vm in instances.values()
-        if "vm_ipv4" in vm
-    }
-
-    for ip in IP_POOL:
-        if ip not in used_ips:
-            return f"{ip}" #CIDR_SUFFIX
-
-    raise RuntimeError("Свободных IP-адресов в пуле больше нет")
-
-
-parser = argparse.ArgumentParser(
-    description="Terraform tfvars generator for micro-paas"
-)
-
-parser.add_argument("--name", required=True)
-parser.add_argument("--cpu", type=int, required=True)
-parser.add_argument("--ram", type=int, required=True)
-parser.add_argument("--disk", type=int, required=True)
-parser.add_argument("--vm-id", type=int, required=True)
-
-args = parser.parse_args()
-
-output_path = Path("terraform") / "terraform.tfvars.json"
-output_path.parent.mkdir(parents=True, exist_ok=True)
-
-if output_path.exists():
-    with output_path.open("r", encoding="utf-8") as file:
-        config = json.load(file)
+# read files
+with open("blueprints/postgresql/blueprint.yml") as f:
+    data = yaml.safe_load(f)
+ 
+#check file
+if file_path.exists():
+    print('Файл уже существует')
 else:
-    config = {"instances": {}}
+    print('Файла нет')
 
-instances = config.setdefault("instances", {})
+# check ip
+exists_ip = []
+if file_path.exists():
+    with open("terraform/terraform.tfvars.json", "r", encoding="utf-8") as f:
+        f_tfvars = json.load(f)
+        for vm in f_tfvars['instances'].values():
+            exists_ip.append(vm["vm_ipv4"])
 
-if args.name in instances:
-    raise RuntimeError(f"Инстанс '{args.name}' уже существует")
+# get free ip
+new_name = data["name"]
+if file_path.exists():
+    if new_name in f_tfvars["instances"]:
+        print('Имя сервиса занято')
+    else:
+        for ip in IP_POOL:
+            if ip not in exists_ip:
+                free_ip = ip
+                break
+else:
+    for ip in IP_POOL:
+        if ip not in exists_ip:
+            free_ip = ip
+            break
 
-if any(vm.get("vm_id") == args.vm_id for vm in instances.values()):
-    raise RuntimeError(f"VM ID '{args.vm_id}' уже используется")
 
-free_ip = get_free_ip(instances)
-
-instances[args.name] = {
-    "name": args.name,
-    "cpu": args.cpu,
-    "ram_mb": args.ram,
-    "disk_gb": args.disk,
-    "vm_id": args.vm_id,
-    "vm_ipv4": free_ip,
-    "gateway": GATEWAY,
+# готовим data 
+full_list = {
+    "instances": {
+        data['name']: {
+            "name": data['name'],
+            "cpu": data['infrastructure']['cpu'],
+            "ram_mb": data['infrastructure']['ram_mb'],
+            "disk_gb": data['infrastructure']['disk_gb'],
+            "vm_id": 2000,
+            "vm_ipv4": free_ip,
+            "gateway": GATEWAY
+        }
+    },
+    "inbound_rules": data["network"]["inbound_ports"]
 }
+#check data
 
-with output_path.open("w", encoding="utf-8") as file:
-    json.dump(config, file, indent=4)
+# упаковываем в файл .json
+with open("terraform/terraform.tfvars.json", "w", encoding="utf-8") as f:
+    json.dump(full_list, f, indent=2)
 
-print(f"Terraform variables written to: {output_path}")
-print(f"Assigned IPv4: {free_ip}")
-print(f"Gateway: {GATEWAY}")
+with open("terraform/terraform.tfvars.json", "r", encoding="utf-8") as f:
+    print(json.load(f))
+
+if file_path.exists():
+    print("tfvars generated successfully")
+    print(f'ip address: {free_ip}')
+else:
+    print("ERROR")

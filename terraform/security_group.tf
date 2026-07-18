@@ -1,39 +1,20 @@
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "default_vm" {
   name = "default-vm"
 
-  rule {
-    type    = "in"
-    action  = "ACCEPT"
-    proto   = "tcp"
-    dport   = "22"
-    source  = var.source_ip
-    comment = "SSH from LAN"
-  }
+  dynamic "rule" {
+    for_each = var.inbound_rules
 
-  rule {
-    type    = "in"
-    action  = "ACCEPT"
-    proto   = "tcp"
-    dport   = "80"
-    source  = var.source_ip
-    comment = "HTTP from LAN"
+    content {
+      type    = "in"
+      action  = "ACCEPT"
+      proto   = rule.value.protocol
+      dport   = rule.value.port
+    }
   }
-
   rule {
     type    = "in"
     action  = "ACCEPT"
-    proto   = "tcp"
-    dport   = "443"
-    source  = var.source_ip
-    comment = "HTTPS from LAN"
-  }
-
-  rule {
-    type    = "in"
-    action  = "ACCEPT"
-    proto   = "icmp"
-    source  = var.source_ip
-    comment = "Ping from LAN"
+    proto   = "icmp" 
   }
 }
 
@@ -57,6 +38,6 @@ resource "proxmox_virtual_environment_firewall_options" "vm_options" {
   vm_id     = each.value.vm_id
 
   enabled       = true
-  input_policy  = "DROP"
+  input_policy  = "ACCEPT"
   output_policy = "ACCEPT"
 }

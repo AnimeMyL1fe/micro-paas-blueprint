@@ -1,0 +1,21 @@
+---
+# tasks file for psql-db
+- name: create docker compose psql dir
+  file:
+    path: /opt/docker/postgresql
+    state: directory
+    group: dev
+    mode: "0770"
+    
+- name: copy docker compose file
+  template:
+    src: postgres-compose.j2
+    dest: /opt/docker/postgresql/compose.yml
+    group: dev
+    mode: "0770"
+  loop:
+    - ""
+- name: start docker compose
+  community.docker.docker_compose_v2:
+    project_src: /opt/docker/postgresql
+    state: present

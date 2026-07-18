@@ -38,3 +38,13 @@ terraform.rc
 
 # Application secrets
 .env
+
+# ansible
+ansible/group_vars/all/vault.yml
+ansible/.vault_pass
+*.vault_pass
+
+
+# Python
+__pycache__/
+*.py[cod]
