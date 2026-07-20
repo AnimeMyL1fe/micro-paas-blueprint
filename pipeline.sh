@@ -28,10 +28,11 @@ python3 main.py --vm-count "$VM_COUNT"
 sleep 3
 # terraform check
 terraform -chdir=terraform init
-terraform -chdir=terraform apply -auto-approve
+terraform -chdir=terraform plan
+#terraform -chdir=terraform apply -auto-approve
 
-echo "ожидание ssh ... (15s)"
-sleep 15
+#echo "ожидание ssh ... (15s)"
+#sleep 15
 # ansible
-echo "ANSIBLE DEPLOY ..."
-cd ansible && ansible-playbook test_deploy.yml
+#echo "ANSIBLE DEPLOY ..."
+#cd ansible && ansible-playbook test_deploy.yml

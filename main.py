@@ -20,7 +20,7 @@ file_path = Path("terraform/terraform.tfvars.json")
 
 # pools
 IP_POOL = []
-for host in range(10, 21):
+for host in range(10, 29):
     IP_POOL.append(f"10.100.100.{host}")
 
 ID_POOL = []
@@ -28,62 +28,54 @@ id_start, id_max = 2000, 2020
 for vm_id in range (id_start, id_max + 1):
     ID_POOL.append(vm_id)
 
-
 # read files
 with open("blueprints/postgresql/blueprint.yml") as f:
     data = yaml.safe_load(f)
 
 if file_path.exists():
     with open("terraform/terraform.tfvars.json", "r", encoding="utf-8") as f:
-        f_tfvars = json.load(f)
-
-# --- NAME ---
-# generator name
-#check name 
-
-if file_path.exists():
-    for vm in f_tfvars["instances"].values():
-        exists_names.append(vm["name"])
-base_name = data["name"]
-
-# --- IP ---
-# check ip
-
-if file_path.exists():
-    for vm in f_tfvars['instances'].values():
-        exists_ip.append(vm["vm_ipv4"])
-
-# --- ID ---
-# check id
-
-if file_path.exists():
-    for vm in f_tfvars["instances"].values():
-        exists_ids.append(vm["vm_id"])
-
-full_list = {
+        tfvars = json.load(f)
+else:
+    tfvars = {
     "instances": {},
     "inbound_rules": data["network"]["inbound_ports"]
-}
+    }
 
-# append full_list
+
+def get_values(f_file, find_text):
+    array = []
+    for vm in f_file["instances"].values():
+        array.append(vm[find_text])
+    return array
+
+def get_pool(pool, exists_array):
+    for value in pool:
+        if value not in exists_array:
+            free_value = value
+            exists_array.append(free_value)
+            return free_value
+    return None        
+    
+exists_names = get_values(tfvars, "name")
+exists_ip = get_values(tfvars, "vm_ipv4")
+exists_ids = get_values(tfvars, "vm_id")
+
+
+# append tfvars
 for _ in range(args.vm_count):
+    base_name = data["name"]
     for vm_count in range(1, vm_limit_count + 1):
         candidate_name = f"{base_name}--{vm_count}"
         if candidate_name not in exists_names:
             free_name = candidate_name
             exists_names.append(free_name)
             break
-    for vm_id in ID_POOL:
-        if vm_id not in exists_ids:
-            free_id = vm_id
-            exists_ids.append(free_id)
-            break
-    for ip in IP_POOL:
-        if ip not in exists_ip:
-            free_ip = ip
-            exists_ip.append(free_ip)
-            break
-    full_list["instances"][free_name] = {
+
+    free_id = get_pool(ID_POOL, exists_ids)
+    free_ip = get_pool(IP_POOL, exists_ip)
+    if free_id is None or free_ip is None:
+        raise SystemExit("---ERROR--- pool заполнен ---ПРОЦЕСС ПРЕКРАЩЕН---")
+    tfvars["instances"][free_name] = {
             "name": free_name,
             "cpu": data['infrastructure']['cpu'],
             "ram_mb": data['infrastructure']['ram_mb'],
@@ -95,13 +87,8 @@ for _ in range(args.vm_count):
 
 # упаковываем в файл .json
 with open("terraform/terraform.tfvars.json", "w", encoding="utf-8") as f:
-    json.dump(full_list, f, indent=2)
+    json.dump(tfvars, f, indent=2)
 
+print('tfvars сгенерирован')
 with open("terraform/terraform.tfvars.json", "r", encoding="utf-8") as f:
     print(json.load(f))
-
-if file_path.exists():
-    print("tfvars generated successfully")
-    print(f'ip address: {free_ip}')
-else:
-    print("ERROR")

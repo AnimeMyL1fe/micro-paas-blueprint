@@ -1,5 +1,4 @@
 ---
-
 - name: Deploy blueprint
   hosts: linux_servers
   tasks:
