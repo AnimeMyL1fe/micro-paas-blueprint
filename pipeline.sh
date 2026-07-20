@@ -5,11 +5,14 @@ echo " =============================== "
 echo ""
 #echo "INSTANCES VARIABLES"
 
+read -p "vm_count: " VM_COUNT
+
 #read -p "name: " NAME
 #read -p "cpu: " CPU
 #read -p "ram(MB): " RAM
 #read -p "disk(GB): " DISK
 #read -p "id: " ID
+
 
 # python dynamice .tfvars script
 # --name NAME --cpu CPU --ram RAM --disk DISK --id ID
@@ -20,7 +23,7 @@ echo ""
 #    --ram "$RAM" \
 #    --disk "$DISK" \
 #    --vm-id "$ID"
-python3 main.py
+python3 main.py --vm-count "$VM_COUNT"
 
 sleep 3
 # terraform check
