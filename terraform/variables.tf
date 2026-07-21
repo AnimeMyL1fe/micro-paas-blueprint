@@ -32,17 +32,6 @@ variable "source_ip" {
   default = "192.168.0.0/24"
 }
 
-variable "inbound_rules" {
-  description = "Inbound firewall rules for deployed service"
-
-  type = list(object({
-    port     = number
-    protocol = string
-  }))
-
-  default = []
-}
-
 # ---------------------------------------
 # Virtual Machines
 # ---------------------------------------
@@ -60,5 +49,11 @@ variable "instances" {
     vm_id       = number
     vm_ipv4     = string
     gateway     = string
+
+    inbound_rules = list(object({
+      port     = number
+      protocol = string
+  }))
+
   }))
 }

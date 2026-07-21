@@ -14,7 +14,7 @@ exists_ids = []
 parser = argparse.ArgumentParser(description="CLI input")
 parser.add_argument("--vm-count", type=int, default=1, help="Количество vm по умолчанию: 1)")
 parser.add_argument("--template", type=str, help="Выбор шаблона")
-parser.add_argument("--preset", type=str, default=1, help="Параметры vm")
+parser.add_argument("--preset", type=str, default='small', help="Параметры vm")
 args = parser.parse_args()
 
 # path for file terrafrorm.tfvars.json
@@ -39,11 +39,10 @@ with open(f"blueprints/{args.template}/profiles/{args.preset}.yml") as f:
 
 if file_path.exists():
     with open("terraform/terraform.tfvars.json", "r", encoding="utf-8") as f:
-        tfvars = json.load(f)
+        tfvars = json.load(f) 
 else:
     tfvars = {
     "instances": {},
-    "inbound_rules": inbound_data["network"]["inbound_ports"]
     }
 
 # func
@@ -86,7 +85,8 @@ for _ in range(args.vm_count):
             "disk_gb": vm_data['infrastructure']['disk_gb'],
             "vm_id": free_id,
             "vm_ipv4": free_ip,
-            "gateway": GATEWAY
+            "gateway": GATEWAY,
+            "inbound_rules": inbound_data["network"]["inbound_ports"]
         }
 
 # упаковываем в файл .json

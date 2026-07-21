@@ -1,8 +1,8 @@
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "default_vm" {
-  name = "default-vm"
-
+  for_each = var.instances
+  name = "default-vm-${each.key}"
   dynamic "rule" {
-    for_each = var.inbound_rules
+    for_each = each.value.inbound_rules
 
     content {
       type    = "in"
@@ -25,7 +25,7 @@ resource "proxmox_virtual_environment_firewall_rules" "vm_rules" {
   vm_id     = each.value.vm_id
 
   rule {
-    security_group = proxmox_virtual_environment_cluster_firewall_security_group.default_vm.name
+    security_group = proxmox_virtual_environment_cluster_firewall_security_group.default_vm[each.key].name
     iface          = "net0"
     comment        = "Apply micro-paas security group"
   }
