@@ -1,7 +1,7 @@
 name: postgresql
 description: PostgreSQL with Adminer and postgres_exporter
 
-profile: small
+#profile: small
 
 infrastructure:
   cpu: 2

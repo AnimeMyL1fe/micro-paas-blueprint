@@ -13,6 +13,8 @@ exists_ids = []
 # parse
 parser = argparse.ArgumentParser(description="CLI input")
 parser.add_argument("--vm-count", type=int, default=1, help="Количество vm по умолчанию: 1)")
+parser.add_argument("--template", type=str, help="Выбор шаблона")
+parser.add_argument("--preset", type=str, default=1, help="Параметры vm")
 args = parser.parse_args()
 
 # path for file terrafrorm.tfvars.json
@@ -20,17 +22,20 @@ file_path = Path("terraform/terraform.tfvars.json")
 
 # pools
 IP_POOL = []
-for host in range(10, 29):
+for host in range(10, 30):
     IP_POOL.append(f"10.100.100.{host}")
 
 ID_POOL = []
 id_start, id_max = 2000, 2020
-for vm_id in range (id_start, id_max + 1):
+for vm_id in range (id_start, id_max):
     ID_POOL.append(vm_id)
 
 # read files
-with open("blueprints/postgresql/blueprint.yml") as f:
-    data = yaml.safe_load(f)
+with open(f"blueprints/{args.template}/blueprint.yml") as f:
+    inbound_data = yaml.safe_load(f)
+
+with open(f"blueprints/{args.template}/profiles/{args.preset}.yml") as f:
+    vm_data = yaml.safe_load(f)
 
 if file_path.exists():
     with open("terraform/terraform.tfvars.json", "r", encoding="utf-8") as f:
@@ -38,10 +43,10 @@ if file_path.exists():
 else:
     tfvars = {
     "instances": {},
-    "inbound_rules": data["network"]["inbound_ports"]
+    "inbound_rules": inbound_data["network"]["inbound_ports"]
     }
 
-
+# func
 def get_values(f_file, find_text):
     array = []
     for vm in f_file["instances"].values():
@@ -63,23 +68,22 @@ exists_ids = get_values(tfvars, "vm_id")
 
 # append tfvars
 for _ in range(args.vm_count):
-    base_name = data["name"]
+    base_name = args.template
     for vm_count in range(1, vm_limit_count + 1):
         candidate_name = f"{base_name}--{vm_count}"
         if candidate_name not in exists_names:
             free_name = candidate_name
             exists_names.append(free_name)
             break
-
     free_id = get_pool(ID_POOL, exists_ids)
     free_ip = get_pool(IP_POOL, exists_ip)
     if free_id is None or free_ip is None:
-        raise SystemExit("---ERROR--- pool заполнен ---ПРОЦЕСС ПРЕКРАЩЕН---")
+        raise SystemExit("---ERROR--- pool (id, ip) заполнен ---ПРОЦЕСС ПРЕКРАЩЕН---")
     tfvars["instances"][free_name] = {
             "name": free_name,
-            "cpu": data['infrastructure']['cpu'],
-            "ram_mb": data['infrastructure']['ram_mb'],
-            "disk_gb": data['infrastructure']['disk_gb'],
+            "cpu": vm_data['infrastructure']['cpu'],
+            "ram_mb": vm_data['infrastructure']['ram_mb'],
+            "disk_gb": vm_data['infrastructure']['disk_gb'],
             "vm_id": free_id,
             "vm_ipv4": free_ip,
             "gateway": GATEWAY
@@ -89,6 +93,12 @@ for _ in range(args.vm_count):
 with open("terraform/terraform.tfvars.json", "w", encoding="utf-8") as f:
     json.dump(tfvars, f, indent=2)
 
-print('tfvars сгенерирован')
+print('-' * 16)
+print('tfvars создан')
+print('-' * 16)
+
+# output
 with open("terraform/terraform.tfvars.json", "r", encoding="utf-8") as f:
-    print(json.load(f))
+    data = json.load(f)
+print_json = json.dumps(data, indent=4, ensure_ascii=False, sort_keys=True)
+print(print_json)

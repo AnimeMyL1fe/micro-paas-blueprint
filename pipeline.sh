@@ -6,6 +6,8 @@ echo ""
 #echo "INSTANCES VARIABLES"
 
 read -p "vm_count: " VM_COUNT
+read -p "template_name: " TEMPLATE_NAME
+read -p "preset_config: " PRESET_NAME
 
 #read -p "name: " NAME
 #read -p "cpu: " CPU
@@ -23,7 +25,10 @@ read -p "vm_count: " VM_COUNT
 #    --ram "$RAM" \
 #    --disk "$DISK" \
 #    --vm-id "$ID"
-python3 main.py --vm-count "$VM_COUNT"
+python3 main.py \
+    --vm-count "$VM_COUNT" \
+    --template "$TEMPLATE_NAME" \
+    --preset "$PRESET_NAME" 
 
 sleep 3
 # terraform check
