@@ -1,175 +1,212 @@
 # micro-paas-blueprint
 
-Автоматизированное создание виртуальных машин и развёртывание сервисов в Proxmox VE с использованием Terraform, Cloud-Init и Ansible.
+Автоматизированное развертывание сервисов в **Proxmox VE** с использованием **Blueprint**, **Terraform** и **Ansible**.
 
+Проект исследует подход к построению собственного **micro-PaaS**, где инфраструктура и сервис разворачиваются одной командой.
 
-## Цель проекта
+---
 
-Создать инструмент, который по одной команде сможет автоматически:
+## Архитектура
 
 ```text
 CLI
-    ↓
-Python
-    ↓
+ │
+ ▼
+Python Generator
+ │
+ ▼
+Blueprint
+ │
+ ▼
+terraform.tfvars.json
+ │
+ ▼
 Terraform
-    ↓
-Создание виртуальных машин
-    ↓
-Генерация Ansible Inventory
-    ↓
+ │
+ ▼
+Proxmox VE
+ │
+ ▼
+Cloud-Init
+ │
+ ▼
+Ansible Inventory
+ │
+ ▼
 Ansible
-    ↓
-Развёртывание сервисов
+ │
+ ▼
+Docker Compose
+ │
+ ▼
+Service
 ```
+
+---
 
 ## Используемые технологии
 
 - Python
 - Terraform
 - Proxmox VE
-- Cloud-Init
 - Ansible
+- Docker
+- Docker Compose
 
-## Что уже реализовано
-- ✅ Базовая Terraform-конфигурация
-- ✅ Создание виртуальных машин из Cloud-Init Template (Proxmox VE)
-- ✅ Генерация `terraform.tfvars.json` через Python CLI
-- ✅ Автоматическое назначение статических IP из пула
-- ✅ Настройка Proxmox SDN: Zone, VNet, Subnet и SNAT
-- ✅ Создание и применение базовой Security Group
-- ✅ Автоматическая генерация Ansible Inventory
-- ✅ Автоматический запуск Terraform
-- ✅ Ожидание готовности SSH после создания VM
-- ✅ Автоматический запуск Ansible Playbook
-- ✅ Установка Docker через Ansible
+---
+
+## Возможности
+
+На текущем этапе проект умеет автоматически:
+
+- ✅ Генерировать `terraform.tfvars.json`
+- ✅ Работать через Blueprint
+- ✅ Разворачивать несколько виртуальных машин
+- ✅ Автоматически выделять свободные IP-адреса
+- ✅ Автоматически выделять VM ID
+- ✅ Настраивать Proxmox SDN
+- ✅ Создавать Security Group и Firewall Rules
+- ✅ Генерировать Ansible Inventory
+- ✅ Ожидать готовность SSH
+- ✅ Устанавливать Docker
+- ✅ Разворачивать сервисы через Ansible
+
+### Реализованные Blueprint
+
+- PostgreSQL:
+    - PostgreSQL
+    - Adminer
+    - postgres_exporter
+
+---
 
 ## Структура проекта
 
 ```text
 .
-├── README.md
 ├── ansible
-│   ├── ansible.cfg
-│   ├── inventory
-│   │   └── hosts.yaml
-│   ├── roles
-│   │   └── docker-install
-│   └── test_deploy.yml
+│   ├── host_vars
+│   ├── inventory
+│   ├── roles
+│   │   ├── docker-install
+│   │   └── postgresql
+│   └── deploy.yml
+│
+├── blueprints
+│   └── postgresql
+│       ├── blueprint.yml
+│       └── profiles
+│
+├── terraform
+│   ├── templates
+│   ├── main.tf
+│   ├── subnet.tf
+│   ├── security_group.tf
+│   ├── variables.tf
+│   └── output.tf
+│
 ├── main.py
 ├── pipeline.sh
-├── terraform
-    ├── main.tf
-    ├── output.tf
-    ├── provider.tf
-    ├── security_group.tf
-    ├── subnet.tf
-    ├── templates
-    │   └── inventory.tpl
-    └── variables.tf
+└── README.md
 ```
+
+---
 
 ## Использование
 
-Перед запуском необходимо экспортировать переменные окружения для Terraform Provider (Proxmox).
+Перед запуском необходимо экспортировать переменные окружения Terraform Provider для Proxmox.
 
-Запуск локального pipeline:
+Запуск pipeline:
 
 ```bash
 chmod +x pipeline.sh
 ./pipeline.sh
 ```
 
-Во время запуска скрипт запросит параметры виртуальной машины:
+После запуска необходимо выбрать Blueprint и профиль.
+
+Например:
 
 ```text
-INSTANCES VARIABLES
-
-name: postgresql
-cpu: 2
-ram(MB): 2048
-disk(GB): 32
-id: 5000
+vm_count: 5
+template: postgresql
+profile: small
 ```
 
-После этого pipeline автоматически:
+После этого автоматически выполняется полный цикл развертывания.
 
 ```text
 pipeline.sh
-        ↓
-Python CLI
-        ↓
+        │
+        ▼
+Python Generator
+        │
+        ▼
 terraform.tfvars.json
-        ↓
+        │
+        ▼
 terraform init
-        ↓
-terraform plan
-        ↓
+        │
+        ▼
 terraform apply
-        ↓
-Создание VM в Proxmox VE
-        ↓
+        │
+        ▼
+Создание виртуальных машин
+        │
+        ▼
 Генерация Ansible Inventory
-        ↓
-Ожидание доступности SSH
-        ↓
-Ansible Playbook
-        ↓
-Установка Docker
+        │
+        ▼
+Ожидание SSH
+        │
+        ▼
+Ansible
+        │
+        ▼
+Docker Compose
+        │
+        ▼
+Развертывание сервиса
 ```
 
-## Текущий pipeline
+---
 
-На текущем этапе проект способен автоматически:
+## Blueprint
 
-- создать виртуальную машину в Proxmox VE;
-- настроить сеть (SDN);
-- применить базовую Security Group;
-- сгенерировать Ansible Inventory;
-- дождаться доступности SSH;
-- выполнить Ansible Playbook;
-- установить Docker.
+Каждый сервис описывается собственным Blueprint.
 
-## Прямой запуск Python
+Blueprint определяет:
 
-Также генератор можно использовать напрямую:
+- параметры виртуальной машины;
+- профиль ресурсов;
+- сетевые настройки (открываемые порты);
+- роли Ansible;
+- параметры сервиса.
 
-```bash
-python3 main.py \
-    --name "$NAME"\
-    --cpu "$CPU" \
-    --ram "$RAM" \
-    --disk "$DISK" \
-    --vm-id "$ID" 
-```
+Это позволяет добавлять новые сервисы практически без изменения основной логики генератора.
 
-После выполнения будет создан файл:
+---
 
-```text
-terraform/terraform.tfvars.json
-```
+## Планы развития
 
-который используется Terraform.
+Возможные направления развития проекта:
 
-
-## Планируемые возможности
-
-Проект находится на стадии исследования архитектуры, поэтому список ниже не является строгим roadmap и может изменяться.
-
-Возможные направления развития:
-
-- [ ] Metadata сервисов
-- [ ] Поддержка нескольких сервисов
-- [ ] Поддержка нескольких виртуальных машин
-- [ ] PostgreSQL Blueprint
+- [ ] Поддержка нескольких Blueprint
 - [ ] Redis Blueprint
+- [ ] MinIO Blueprint
 - [ ] Prometheus Blueprint
+- [ ] Grafana Blueprint
+- [ ] Destroy Pipeline
+- [ ] FastAPI API
+- [ ] Web UI
 - [ ] CI/CD
+
+---
 
 ## Статус проекта
 
-🚧 **MVP в активной разработке.**
+🚧 Проект находится в активной разработке.
 
-Проект создаётся как pet-проект для исследования подходов к автоматизации развёртывания инфраструктуры.
+На текущем этапе реализован **MVP**, позволяющий автоматически развернуть готовый сервис в Proxmox VE с использованием Terraform и Ansible.
 
-Архитектура и функциональность могут существенно изменяться по мере развития проекта.
+Архитектура продолжает развиваться и может изменяться по мере появления новых возможностей.
