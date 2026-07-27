@@ -40,4 +40,4 @@ echo "ожидание ssh ... (20s)"
 sleep 20
 # ansible
 echo "ANSIBLE DEPLOY ..."
-cd ansible && ansible-playbook test_deploy.yml --vault-pass-file=.vault_pass
+cd ansible && ansible-playbook deploy.yml --vault-pass-file=.vault_pass
