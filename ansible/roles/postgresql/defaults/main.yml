@@ -1,0 +1,4 @@
+postgresql_user: "psql_user"
+postgresql_database: "defualt_db"
+postgresql_exporter_user: "exporter_user"
+

@@ -1,6 +1,6 @@
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "default_vm" {
   for_each = var.instances
-  name = "default-vm-${each.key}"
+  name = "fw-${each.key}"
   dynamic "rule" {
     for_each = each.value.inbound_rules
 

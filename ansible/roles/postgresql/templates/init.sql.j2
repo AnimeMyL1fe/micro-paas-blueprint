@@ -1,0 +1,3 @@
+CREATE USER {{ postgresql_exporter_user }}
+    WITH PASSWORD '{{ vault_exporter_password }}';
+GRANT pg_monitor TO {{ postgresql_exporter_user }};

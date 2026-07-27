@@ -13,8 +13,14 @@
     dest: /opt/docker/postgresql/compose.yml
     group: dev
     mode: "0770"
-  loop:
-    - ""
+
+
+- name: psql initialization script
+  template:
+    src: init.sql.j2
+    dest: /opt/docker/postgresql/init.sql
+    mode: "0644"
+
 - name: start docker compose
   community.docker.docker_compose_v2:
     project_src: /opt/docker/postgresql

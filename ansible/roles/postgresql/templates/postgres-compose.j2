@@ -1,16 +1,17 @@
 services:
   postgres:
-    image: "{{ postgresql.image }}"
+    image: "{{ postgresql.version }}"
     environment:
-      POSTGRES_USER: "{{ postgresql.user }}"
-      POSTGRES_PASSWORD: "{{ vault_postgresql_password }}"
-      POSTGRES_DB: "{{ postgresql.database }}"
+      POSTGRES_USER: "{{ postgresql_user }}"
+      POSTGRES_PASSWORD: "{{ vault_postgresql_password }}" 
+      POSTGRES_DB: "{{ postgresql_database }}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test:
         - CMD-SHELL
-        - "pg_isready -U {{ postgresql.user }} -d {{ postgresql.database }}"
+        - "pg_isready -U {{ postgresql_user }} -d {{ postgresql_database }}"
       interval: 10s
       timeout: 5s
       retries: 5
@@ -18,7 +19,7 @@ services:
   postgres_exporter:
     image: prometheuscommunity/postgres-exporter
     environment:
-      DATA_SOURCE_NAME: "postgresql://{{ postgresql.exporter.user }}:{{ vault_exporter_password }}@postgres:5432/{{ postgresql.database }}?sslmode=disable"
+      DATA_SOURCE_NAME: "postgresql://{{ postgresql_exporter_user }}:{{ vault_exporter_password }}@postgres:5432/{{ postgresql_database }}?sslmode=disable"
     ports:
       - "9187:9187"
     depends_on:

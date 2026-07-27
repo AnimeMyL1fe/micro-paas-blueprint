@@ -6,7 +6,7 @@ infrastructure:
   disk_gb: 50
 
 postgresql:
-  version: "15-alpine"
+  version: "postgres:15-alpine"
   max_connections: 150
   shared_buffers: 1GB
 

@@ -23,6 +23,7 @@
       - software-properties-common
     state: present
     update_cache: yes
+    lock_timeout: 300
 
 - name: add key
   apt_key:

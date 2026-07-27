@@ -1,8 +1,6 @@
 name: postgresql
 description: PostgreSQL with Adminer and postgres_exporter
 
-#profile: small
-
 infrastructure:
   cpu: 2
   ram_mb: 2048
@@ -25,13 +23,5 @@ network:
 ansible:
   shared_roles:
     - docker-install
-
   service_roles:
     - postgresql
-
-postgresql:
-  image: postgres:15-alpine
-  database: default_db
-  user: postgres
-  exporter_enabled: true
-  adminer_enabled: true

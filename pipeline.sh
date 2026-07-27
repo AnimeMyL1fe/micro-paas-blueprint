@@ -1,6 +1,6 @@
 #!/bin/bash
 echo " =============================== "
-echo "ВНИМАНИЕ! НЕ ЗАБУДЬТЕ ЭКСПОРТИРОВАТЬ CREDENTIALS ДЛЯ PROXMOX PROVIDER"
+echo "TERRAFORM ---> ANSIBLE DEPLOY"
 echo " =============================== "
 echo ""
 #echo "INSTANCES VARIABLES"
@@ -33,11 +33,11 @@ python3 main.py \
 sleep 3
 # terraform check
 terraform -chdir=terraform init
-terraform -chdir=terraform plan
-#terraform -chdir=terraform apply -auto-approve
+#terraform -chdir=terraform plan
+terraform -chdir=terraform apply -auto-approve -parallelism=2
 
-#echo "ожидание ssh ... (15s)"
-#sleep 15
+echo "ожидание ssh ... (20s)"
+sleep 20
 # ansible
-#echo "ANSIBLE DEPLOY ..."
-#cd ansible && ansible-playbook test_deploy.yml
+echo "ANSIBLE DEPLOY ..."
+cd ansible && ansible-playbook test_deploy.yml --vault-pass-file=.vault_pass
