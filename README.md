@@ -1,5 +1,7 @@
 # micro-paas-blueprint
 
+[![CI Checks](https://github.com/AnimeMyL1fe/micro-paas-blueprint/actions/workflows/pylint.yml/badge.svg?branch=dev)](https://github.com/AnimeMyL1fe/micro-paas-blueprint/actions/workflows/pylint.yml)
+
 Автоматизированное развертывание сервисов в **Proxmox VE** с использованием **Blueprint**, **Terraform** и **Ansible**.
 
 Проект исследует подход к построению собственного **micro-PaaS**, где инфраструктура и сервис разворачиваются одной командой.
