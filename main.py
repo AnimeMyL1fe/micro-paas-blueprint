@@ -62,7 +62,7 @@ def get_pool(pool, exists_array):
             exists_array.append(free_value)
             return free_value
     return None
-    
+
 exists_names = get_values(tfvars, "name")
 exists_ip = get_values(tfvars, "vm_ipv4")
 exists_ids = get_values(tfvars, "vm_id")
@@ -77,8 +77,8 @@ for _ in range(args.vm_count):
             free_name = candidate_name
             exists_names.append(free_name)
             break
-        else:
-            raise SystemExit("---ERROR--- пул имён заполнен ---")
+    else:
+        raise SystemExit("---ERROR--- пул имён заполнен ---")
     free_id = get_pool(ID_POOL, exists_ids)
     free_ip = get_pool(IP_POOL, exists_ip)
     if free_id is None or free_ip is None:
@@ -109,7 +109,7 @@ for _ in range(args.vm_count):
             sort_keys=False,
             allow_unicode=True
         )
-    
+
 # --- output ---
 with open("terraform/terraform.tfvars.json", "w", encoding="utf-8") as f:
     json.dump(tfvars, f, indent=2)
