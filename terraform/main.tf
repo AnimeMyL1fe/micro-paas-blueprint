@@ -9,7 +9,7 @@ resource "proxmox_virtual_environment_vm" "instance" {
   vm_id       = each.value.vm_id
 
   clone {
-    vm_id = var.clone_id 
+    vm_id = var.clone_id
   }
 
   cpu {
@@ -27,7 +27,7 @@ resource "proxmox_virtual_environment_vm" "instance" {
   }
 
   network_device {
-    bridge = var.vm_vnet
+    bridge   = var.vm_vnet
     model    = "virtio"
     firewall = true
   }
@@ -52,7 +52,7 @@ resource "proxmox_virtual_environment_vm" "instance" {
 # ---------------------------------------
 locals {
   vm_info = {
-    for name, vm in proxmox_virtual_environment_vm.instance : name =>{
+    for name, vm in proxmox_virtual_environment_vm.instance : name => {
       ip = split("/", vm.initialization[0].ip_config[0].ipv4[0].address)[0]
     }
   }
@@ -61,9 +61,9 @@ locals {
 
 resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/templates/inventory.tpl", {
-    vms           = local.vm_info
-    ans_ssh_key   = var.private_ssh
-    ans_user      = var.vm_user
+    vms         = local.vm_info
+    ans_ssh_key = var.private_ssh
+    ans_user    = var.vm_user
   })
   filename = "${path.module}/../ansible/inventory/hosts.yaml"
 }

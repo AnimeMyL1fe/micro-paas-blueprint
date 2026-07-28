@@ -1,20 +1,20 @@
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "default_vm" {
   for_each = var.instances
-  name = "fw-${each.key}"
+  name     = "fw-${each.key}"
   dynamic "rule" {
     for_each = each.value.inbound_rules
 
     content {
-      type    = "in"
-      action  = "ACCEPT"
-      proto   = rule.value.protocol
-      dport   = rule.value.port
+      type   = "in"
+      action = "ACCEPT"
+      proto  = rule.value.protocol
+      dport  = rule.value.port
     }
   }
   rule {
-    type    = "in"
-    action  = "ACCEPT"
-    proto   = "icmp" 
+    type   = "in"
+    action = "ACCEPT"
+    proto  = "icmp"
   }
 }
 
