@@ -12,7 +12,7 @@ jobs:
       matrix:
         python-version: ["3.13", "3.14"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
@@ -28,7 +28,7 @@ jobs:
   terraform:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Terraform validate
         working-directory: terraform
         run: |
@@ -39,7 +39,7 @@ jobs:
   ansible:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Ansible syntax-check
         working-directory: ansible
         run: |

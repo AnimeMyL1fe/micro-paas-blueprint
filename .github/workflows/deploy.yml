@@ -1,0 +1,84 @@
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_action:
+        description: 'Deploy Services'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - apply
+          - plan
+      vm_count:
+        description: 'vm count'
+        default: "1"
+        required: true
+        type: string
+      template:
+        description: 'vm template'
+        required: true
+        default: 'postgresql'
+        type: choice
+        options:
+          - postgresql
+      preset:
+        description: 'vm preset'
+        required: true
+        default: 'small'
+        type: choice
+        options:
+          - small
+          - medium
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v6
+      - name: Генерация Terraform tfvars и Ansible host_vars.
+        env:
+          VM_COUNT: ${{ inputs.vm_count }}
+          TEMPLATE: ${{ inputs.template }} 
+          PRESET: ${{ inputs.preset }}
+        run: |
+         python -m pip install --upgrade pip
+         python -m pip install -r requirements.txt
+         python main.py \
+          --vm-count "$VM_COUNT" \
+          --template "$TEMPLATE" \
+          --preset "$PRESET"
+
+      - name: Terraform init
+        working-directory: terraform
+        run: |
+          terraform init
+
+      - name: Terraform plan
+        if: ${{ inputs.deploy_action == 'plan' }}
+        working-directory: terraform
+        env:     
+          PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
+          PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
+        run: |
+          terraform plan
+    
+      - name: Terraform apply
+        if: ${{ inputs.deploy_action == 'apply' }}
+        working-directory: terraform
+        env:     
+          PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
+          PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
+        run: |
+          terraform apply -auto-approve
+    
+      - name: Ansible deploy
+        if: ${{ inputs.deploy_action == 'apply' }}
+        working-directory: ansible
+        env:
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT}}
+        run: |
+          vault_file=$(mktemp "$RUNNER_TEMP/vault-pass.XXXXXX")
+          trap 'rm -f "$vault_file"' EXIT
+          printf '%s' "$VAULT_PASS" > "$vault_file"
+          chmod 600 "$vault_file"
+          ansible-playbook deploy.yml --vault-password-file "$vault_file"

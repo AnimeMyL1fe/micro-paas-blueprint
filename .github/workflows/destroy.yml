@@ -1,0 +1,24 @@
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_destroy:
+        description: 'Type DESTROY to confirm'
+        required: true
+        type: string
+jobs:
+  destroy_infra:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v6
+      - name: Terraform init
+        working-directory: terraform
+        run: |
+          terraform init
+      - name: Terraform Destroy
+        if: ${{ inputs.confirm_destroy == 'DESTROY' }}
+        working-directory: terraform
+        env:     
+          PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
+          PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
+        run: |
+          terraform destroy -auto-approve
