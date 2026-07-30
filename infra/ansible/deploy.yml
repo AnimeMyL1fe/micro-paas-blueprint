@@ -1,0 +1,6 @@
+---
+- name: Deploy blueprint
+  hosts: minio
+  roles:
+    - docker-install
+    - minio
