@@ -5,20 +5,24 @@ on:
         description: 'Type DESTROY to confirm'
         required: true
         type: string
+
 jobs:
   destroy_infra:
+    if: ${{ inputs.confirm_destroy == 'DESTROY' }}
     runs-on: self-hosted
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
+      PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
+
     steps:
       - uses: actions/checkout@v6
+
       - name: Terraform init
         working-directory: terraform
-        run: |
-          terraform init
+        run: terraform init -input=false
+
       - name: Terraform Destroy
-        if: ${{ inputs.confirm_destroy == 'DESTROY' }}
         working-directory: terraform
-        env:     
-          PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
-          PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
-        run: |
-          terraform destroy -auto-approve
+        run: terraform destroy -input=false -auto-approve
