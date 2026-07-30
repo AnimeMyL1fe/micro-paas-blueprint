@@ -37,7 +37,7 @@ variable "source_ip" {
 # ---------------------------------------
 variable "vm_vnet" {
   type    = string
-  default = "vn1"
+  default = "vn2"
 }
 
 variable "instances" {
@@ -51,7 +51,7 @@ variable "instances" {
     gateway = string
 
     inbound_rules = list(object({
-      port     = number
+      port     = string
       protocol = string
     }))
 

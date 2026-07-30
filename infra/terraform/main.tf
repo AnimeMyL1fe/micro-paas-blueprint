@@ -10,10 +10,12 @@ resource "proxmox_virtual_environment_vm" "instance" {
 
   clone {
     vm_id = var.clone_id
+    
   }
 
   cpu {
     cores = each.value.cpu
+    type  = "x86-64-v2-AES"
   }
 
   memory {

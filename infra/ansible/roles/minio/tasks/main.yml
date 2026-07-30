@@ -1,0 +1,21 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for MinIO
+- name: create docker dir
+  file:
+    path: /opt/docker/minio
+    state: directory
+    group: dev
+    mode: "0770"
+
+- name: Copy compose file
+  template:
+    src: minio-compose.yaml.j2
+    dest: /opt/docker/minio/compose.yml
+    group: dev
+    mode: "0770"
+
+- name: Start docker compose
+  community.docker.docker_compose_v2:
+    project_src: /opt/docker/minio
+    state: present
