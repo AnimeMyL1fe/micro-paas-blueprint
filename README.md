@@ -92,6 +92,8 @@ Bootstrap-инфраструктура имеет независимый Terrafo
 - ✅ Удалять инфраструктуру через подтверждаемый Destroy Pipeline
 - ✅ Хранить секреты Ansible в Ansible Vault
 
+---
+
 ### Реализованные Blueprint
 
 - PostgreSQL:
