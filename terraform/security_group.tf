@@ -26,7 +26,6 @@ resource "proxmox_virtual_environment_firewall_rules" "vm_rules" {
 
   rule {
     security_group = proxmox_virtual_environment_cluster_firewall_security_group.default_vm[each.key].name
-    iface          = "net0"
     comment        = "Apply micro-paas security group"
   }
 }
