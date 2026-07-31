@@ -1,3 +1,5 @@
+name: destroy
+
 on:
   workflow_dispatch:
     inputs:
@@ -25,4 +27,14 @@ jobs:
 
       - name: Terraform Destroy
         working-directory: terraform
-        run: terraform destroy -input=false -auto-approve
+        run: |
+          terraform destroy \
+            -input=false \
+            -auto-approve \
+            -var='instances={}'
+
+      - name: Cleanup generated files
+        if: ${{ success() }}
+        run: |
+          rm -f terraform/terraform.tfvars.json
+          rm -rf ansible/host_vars

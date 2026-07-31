@@ -11,6 +11,8 @@ VM_LIMIT_COUNT = 20
 exists_names = []
 exists_ip = []
 exists_ids = []
+host_vars_dir = Path("ansible/host_vars")
+host_vars_dir.mkdir(parents=True, exist_ok=True)
 
 # --- input ---
 parser = argparse.ArgumentParser(description="CLI input")
@@ -99,7 +101,6 @@ for _ in range(args.vm_count):
         "shared_roles": inbound_data['ansible']['shared_roles'],
         "service_roles": inbound_data['ansible']['service_roles'],
         args.template: vm_data[args.template],
-        "features": vm_data['features']
     }
 
     with open(f"ansible/host_vars/{free_name}.yml", "w", encoding="utf-8") as f:

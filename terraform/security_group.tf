@@ -26,7 +26,6 @@ resource "proxmox_virtual_environment_firewall_rules" "vm_rules" {
 
   rule {
     security_group = proxmox_virtual_environment_cluster_firewall_security_group.default_vm[each.key].name
-    iface          = "net0"
     comment        = "Apply micro-paas security group"
   }
 }
@@ -38,6 +37,6 @@ resource "proxmox_virtual_environment_firewall_options" "vm_options" {
   vm_id     = each.value.vm_id
 
   enabled       = true
-  input_policy  = "ACCEPT"
+  input_policy  = "DROP"
   output_policy = "ACCEPT"
 }

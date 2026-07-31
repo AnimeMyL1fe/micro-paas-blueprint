@@ -1,0 +1,8 @@
+profile_name: small
+
+infrastructure:
+  cpu: 2
+  ram_mb: 2048
+  disk_gb: 20
+
+docker: {}

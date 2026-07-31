@@ -91,15 +91,23 @@ Bootstrap-инфраструктура имеет независимый Terrafo
 - ✅ Запускать Deploy Pipeline вручную
 - ✅ Удалять инфраструктуру через подтверждаемый Destroy Pipeline
 - ✅ Хранить секреты Ansible в Ansible Vault
+- ✅ Выбирать Blueprint и профиль через GitHub Actions
+- ✅ Выполнять полный цикл Deploy через GitHub Actions
+- ✅ Разворачивать чистый Docker-хост
 
 ---
 
 ### Реализованные Blueprint
 
+- Docker:
+    - виртуальная машина с установленными Docker Engine и Docker Compose;
+    - профили ресурсов `small` и `medium`.
+
 - PostgreSQL:
-    - PostgreSQL
-    - Adminer
-    - postgres_exporter
+    - PostgreSQL;
+    - Adminer;
+    - postgres_exporter;
+    - профили ресурсов `small` и `medium`.
 
 ---
 
@@ -112,51 +120,39 @@ Bootstrap-инфраструктура имеет независимый Terrafo
 │       ├── ci_check.yml
 │       ├── deploy.yml
 │       └── destroy.yml
-├── README.md
 ├── ansible
-│   ├── ansible.cfg
-│   ├── deploy.yml
-│   ├── group_vars
-│   │   └── all
-│   ├── host_vars
-│   ├── inventory
-│   └── roles
-│       ├── docker-install
-│       └── postgresql
+│   ├── deploy.yml
+│   ├── group_vars
+│   ├── host_vars
+│   ├── inventory
+│   └── roles
+│       ├── bootstrap
+│       ├── docker-install
+│       └── postgresql
 ├── blueprints
-│   └── postgresql
-│       ├── blueprint.yml
-│       └── profiles
+│   ├── docker
+│   │   ├── blueprint.yml
+│   │   └── profiles
+│   │       ├── medium.yml
+│   │       └── small.yml
+│   └── postgresql
+│       ├── blueprint.yml
+│       └── profiles
+│           ├── medium.yml
+│           └── small.yml
 ├── infra
-│   ├── ansible
-│   │   ├── ansible.cfg
-│   │   ├── bootstrap_infra.yml
-│   │   ├── group_vars
-│   │   ├── inventory
-│   │   └── roles
+│   ├── ansible
+│   │   ├── bootstrap_infra.yml
+│   │   └── roles
 │   │       ├── docker-install
 │   │       └── minio
-│   └── terraform
-│       ├── main.tf
-│       ├── output.tf
-│       ├── provider.tf
-│       ├── security_group.tf
-│       ├── subnet.tf
-│       ├── templates
-│       └── variables.tf
+│   └── terraform
+├── terraform
 ├── main.py
 ├── pipeline.sh
 ├── requirements-dev.txt
 ├── requirements.txt
-└── terraform
-    ├── main.tf
-    ├── output.tf
-    ├── provider.tf
-    ├── security_group.tf
-    ├── subnet.tf
-    ├── templates
-    │   └── inventory.tpl
-    └── variables.tf
+└── README.md
 ```
 
 ---
@@ -252,14 +248,20 @@ Blueprint определяет:
 
 Возможные направления развития проекта:
 
-- [ ] Поддержка нескольких Blueprint
-- [ ] Redis Blueprint
-- [ ] Prometheus Blueprint
-- [ ] Grafana Blueprint
+- [x] Поддержка нескольких Blueprint
+- [x] Docker Blueprint
+- [x] PostgreSQL Blueprint
 - [x] Отдельная bootstrap-инфраструктура
 - [x] MinIO S3 backend для Terraform State
-- [x] Destroy Pipeline
+- [x] Deploy и Destroy pipelines
 - [x] CI/CD
+- [ ] Redis Blueprint
+- [ ] Nginx Blueprint
+- [ ] WordPress Blueprint
+- [ ] MongoDB Blueprint
+- [ ] MinIO Blueprint
+- [ ] Мониторинг инфраструктуры: Prometheus и Grafana
+- [ ] Централизованный сбор логов
 - [ ] FastAPI API
 - [ ] Web UI
 - [ ] Kubernetes
@@ -270,6 +272,8 @@ Blueprint определяет:
 
 🚧 Проект находится в активной разработке.
 
-На текущем этапе реализован **MVP**, позволяющий автоматически развернуть готовый сервис в Proxmox VE с использованием Terraform и Ansible.
+Реализован рабочий MVP, выполняющий полный цикл развёртывания сервисов:
 
-Архитектура продолжает развиваться и может изменяться по мере появления новых возможностей.
+`Blueprint → Python Generator → Terraform → Proxmox VE → Ansible → Docker Compose`.
+
+Поддерживаются Docker и PostgreSQL Blueprint, профили ресурсов, CI-проверки, ручные Deploy/Destroy pipelines и хранение Terraform State в MinIO.

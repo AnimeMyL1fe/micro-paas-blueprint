@@ -1,5 +1,5 @@
-name: postgresql
-description: PostgreSQL with Adminer and postgres_exporter
+name: docker
+description: Linux with Docker
 
 network:
   inbound_ports:
@@ -14,9 +14,9 @@ network:
 
     - port: 9187
       protocol: tcp
-
+      
 ansible:
   shared_roles:
-    - docker-install
+    - bootstrap
   service_roles:
-    - postgresql
+    - docker-install

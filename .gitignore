@@ -40,7 +40,7 @@ terraform.rc
 .env
 
 # ansible
-ansible/group_vars/all/vault.yml
+#ansible/group_vars/all/vault.yml
 ansible/.vault_pass
 *.vault_pass
 
