@@ -23,6 +23,7 @@ on:
         type: choice
         options:
           - postgresql
+          - docker
       preset:
         description: 'vm preset'
         required: true
@@ -35,15 +36,27 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
+      PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
+      
     steps:
       - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+
       - name: Генерация Terraform tfvars и Ansible host_vars.
         env:
           VM_COUNT: ${{ inputs.vm_count }}
           TEMPLATE: ${{ inputs.template }} 
           PRESET: ${{ inputs.preset }}
         run: |
-         python -m pip install --upgrade pip
          python -m pip install -r requirements.txt
          python main.py \
           --vm-count "$VM_COUNT" \
@@ -58,18 +71,12 @@ jobs:
       - name: Terraform plan
         if: ${{ inputs.deploy_action == 'plan' }}
         working-directory: terraform
-        env:     
-          PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
-          PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
         run: |
           terraform plan
     
       - name: Terraform apply
         if: ${{ inputs.deploy_action == 'apply' }}
         working-directory: terraform
-        env:     
-          PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
-          PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
         run: |
           terraform apply -auto-approve
     
