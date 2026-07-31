@@ -5,6 +5,4 @@ infrastructure:
   ram_mb: 4096
   disk_gb: 50
 
-docker:
-
-features:
+docker: {}

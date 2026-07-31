@@ -99,7 +99,6 @@ for _ in range(args.vm_count):
         "shared_roles": inbound_data['ansible']['shared_roles'],
         "service_roles": inbound_data['ansible']['service_roles'],
         args.template: vm_data[args.template],
-        "features": vm_data['features']
     }
 
     with open(f"ansible/host_vars/{free_name}.yml", "w", encoding="utf-8") as f:

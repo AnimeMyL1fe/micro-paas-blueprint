@@ -10,6 +10,3 @@ postgresql:
   max_connections: 50
   shared_buffers: 256MB
 
-features:
-  exporter_enabled: true
-  adminer_enabled: true
