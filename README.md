@@ -248,8 +248,6 @@ Blueprint определяет:
 
 Возможные направления развития проекта:
 
-## Планы развития
-
 - [x] Поддержка нескольких Blueprint
 - [x] Docker Blueprint
 - [x] PostgreSQL Blueprint
