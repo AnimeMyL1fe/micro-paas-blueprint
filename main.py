@@ -11,6 +11,8 @@ VM_LIMIT_COUNT = 20
 exists_names = []
 exists_ip = []
 exists_ids = []
+host_vars_dir = Path("ansible/host_vars")
+host_vars_dir.mkdir(parents=True, exist_ok=True)
 
 # --- input ---
 parser = argparse.ArgumentParser(description="CLI input")
