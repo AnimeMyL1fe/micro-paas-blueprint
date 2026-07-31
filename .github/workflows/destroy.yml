@@ -1,3 +1,5 @@
+name: destroy
+
 on:
   workflow_dispatch:
     inputs:

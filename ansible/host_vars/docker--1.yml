@@ -1,0 +1,6 @@
+shared_roles:
+- bootstrap
+service_roles:
+- docker-install
+docker: null
+features: null
