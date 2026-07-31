@@ -38,6 +38,6 @@ resource "proxmox_virtual_environment_firewall_options" "vm_options" {
   vm_id     = each.value.vm_id
 
   enabled       = true
-  input_policy  = "ACCEPT"
+  input_policy  = "DROP"
   output_policy = "ACCEPT"
 }

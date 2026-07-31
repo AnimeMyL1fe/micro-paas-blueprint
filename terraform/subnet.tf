@@ -24,7 +24,7 @@ resource "proxmox_sdn_subnet" "subnet_1" {
 }
 
 # SDN Applier for all resources
-resource "proxmox_virtual_environment_sdn_applier" "subnet_applier" {
+resource "proxmox_sdn_applier" "subnet_applier" {
   depends_on = [
     proxmox_sdn_zone_simple.zone_1,
     proxmox_sdn_vnet.vnet_1,
